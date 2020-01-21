@@ -1,7 +1,7 @@
 const {AngularCompilerPlugin} = require('@ngtools/webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
+const TerserPlugin = require('terser-webpack-plugin');
 module.exports = {
     mode: 'production',
     entry: './src/main.aot.ts',
@@ -29,27 +29,16 @@ module.exports = {
         new HtmlWebpackPlugin({ template: './src/index.html' }),
     ],
     optimization: {
-        noEmitOnErrors: true,
+        minimize: true,
         minimizer: [
-            new UglifyJsPlugin({
-                  minify(file, sourceMap) {
-                    // https://github.com/mishoo/UglifyJS2#minify-options
-                    const uglifyJsOptions = {
-                      /* your `uglify-js` package options */
-                      output: {
+            new TerserPlugin({
+                terserOptions: {
+                    output: {
                         comments: false,
-                      },
-                    };
-          
-                    if (sourceMap) {
-                      uglifyJsOptions.sourceMap = {
-                        content: sourceMap,
-                      };
-                    }
-          
-                    return require('terser').minify(file, uglifyJsOptions);
-                  },
-            }),
-        ]
+                    },
+                },
+                extractComments: false,
+            })
+        ], 
     }
 }
